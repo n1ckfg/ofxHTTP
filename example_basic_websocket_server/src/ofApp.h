@@ -29,26 +29,28 @@
 #include "ofMain.h"
 #include "ofxJSONElement.h"
 #include "ofxHTTP.h"
+#include "ofxCrypto.h"
 
+//using namespace ofx;
 
-using namespace ofx;
+#define NUM_MESSAGES 30 // how many past ws messages we want to keep
 
+class ofApp: public ofBaseApp {
 
-class ofApp: public ofBaseApp
-{
-public:
-    void setup();
-    void update();
-    void draw();
+    public:
+        void setup();
+        void update();
+        void draw();
 
-    void onWebSocketOpenEvent(HTTP::WebSocketEventArgs& evt);
-    void onWebSocketCloseEvent(HTTP::WebSocketEventArgs& evt);
-    void onWebSocketFrameReceivedEvent(HTTP::WebSocketFrameEventArgs& evt);
-    void onWebSocketFrameSentEvent(HTTP::WebSocketFrameEventArgs& evt);
-    void onWebSocketErrorEvent(HTTP::WebSocketEventArgs& evt);
+        ofxHTTP::SimpleWebSocketServer wsServer;
+        void onWebSocketOpenEvent(ofxHTTP::WebSocketEventArgs& evt);
+        void onWebSocketCloseEvent(ofxHTTP::WebSocketCloseEventArgs& evt);
+        void onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt);
+        void onWebSocketFrameSentEvent(ofxHTTP::WebSocketFrameEventArgs& evt);
+        void onWebSocketErrorEvent(ofxHTTP::WebSocketErrorEventArgs& evt);
 
-    ofColor bgColor;
+        int wsPort = 7112;
 
-    HTTP::BasicWebSocketServer::SharedPtr server;
+        ofColor bgColor;
 
 };

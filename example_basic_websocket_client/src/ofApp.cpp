@@ -5,7 +5,7 @@ void ofApp::setup(){
     
     
     //https://gist.github.com/tuxmartin/1218851b7e025f68ecc50f949c9dd332
-    Poco::Net::HTTPClientSession websocket("127.0.0.1",4444);    
+    Poco::Net::HTTPClientSession websocket("nfg-rpi-3-4.local", 7112);    
     Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_GET, "/?encoding=text",Poco::Net::HTTPMessage::HTTP_1_1);
     request.set("origin", "http://www.websocket.org");
     Poco::Net::HTTPResponse response;

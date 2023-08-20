@@ -26,103 +26,85 @@
 #include "ofApp.h"
 
 
-void ofApp::setup()
-{
+void ofApp::setup() {
     ofSetFrameRate(30);
 
     bgColor = ofColor::white;
 
-    HTTP::BasicWebSocketServerSettings settings;
-
-    server = HTTP::BasicWebSocketServer::makeShared(settings);
-
-    server->getWebSocketRoute()->registerWebSocketEvents(this);
-    server->start();
+    ofxHTTP::SimpleWebSocketServerSettings wsSettings;
+    wsSettings.setPort(wsPort);
+    wsServer.setup(wsSettings);
+    wsServer.webSocketRoute().registerWebSocketEvents(this);
+    cout << "\nStarting websocket server..." << endl;
+    wsServer.start();
 
     // Launch a browser with the address of the server.
-    ofLaunchBrowser(server->getURL());
+    ofLaunchBrowser(wsServer.url());
 }
 
 
-void ofApp::update()
-{
+void ofApp::update() {
     Json::Value setCurrentFrameJSON;
     setCurrentFrameJSON["method"] = "setCurrentFrame";
     Json::Value setCurrentFrameParamsJSON;
     setCurrentFrameParamsJSON["frameNum"] = ofGetFrameNum();
     setCurrentFrameJSON["data"] = setCurrentFrameParamsJSON;
 
-    server->getWebSocketRoute()->broadcast(setCurrentFrameJSON.toStyledString());
+    wsServer.webSocketRoute().broadcast(setCurrentFrameJSON.toStyledString());
 }
 
 
-void ofApp::draw()
-{
+void ofApp::draw() {
     ofBackground(bgColor);
     ofSetColor(255);
     
-    std::size_t numConnected = server->getWebSocketRoute()->getNumWebSocketConnections();
+    std::size_t numConnected = wsServer.webSocketRoute().numConnections();
 
     ofSetColor(0);
 
     ofDrawBitmapStringHighlight("Num Connected: " + ofToString(numConnected),ofPoint(40,40));
-
 }
 
 
-void ofApp::onWebSocketOpenEvent(HTTP::WebSocketEventArgs& evt)
-{
-    cout << "Connection opened from: " << evt.getConnectionRef().getClientAddress().toString() << endl;
+void ofApp::onWebSocketOpenEvent(ofxHTTP::WebSocketEventArgs& evt) {
+    cout << "Websocket connection opened." << evt.connection().clientAddress().toString() << endl;// << evt.getConnectionRef().getClientAddress().toString() << endl;
 }
 
 
-void ofApp::onWebSocketCloseEvent(HTTP::WebSocketEventArgs& evt)
-{
-    cout << "Connection closed from: " << evt.getConnectionRef().getClientAddress().toString() << endl;
+void ofApp::onWebSocketCloseEvent(ofxHTTP::WebSocketCloseEventArgs& evt) {
+    cout << "Websocket connection closed." << evt.connection().clientAddress().toString() << endl; //<< evt.getConnectionRef().getClientAddress().toString() << endl;
 }
 
 
-void ofApp::onWebSocketFrameReceivedEvent(HTTP::WebSocketFrameEventArgs& evt)
-{
-    cout << "Frame from: " << evt.getConnectionRef().getClientAddress().toString() << endl;
+void ofApp::onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt) {
+    cout << "Websocket frame was received:" << evt.connection().clientAddress().toString() << endl; // << evt.getConnectionRef().getClientAddress().toString() << endl;
 
     ofxJSONElement json;
 
-    if(json.parse(evt.getFrameRef().getText()))
-    {
+    if(json.parse(evt.frame().getText())) {
         std::cout << json.toStyledString() << std::endl;
 
-        if(json.isMember("command") && json["command"] == "SET_BACKGROUND_COLOR")
-        {
-            if(json["data"] == "white")
-            {
+        if(json.isMember("command") && json["command"] == "SET_BACKGROUND_COLOR") {
+            if(json["data"] == "white") {
                 bgColor = ofColor::white;
-            }
-            else if(json["data"] == "black")
-            {
+            } else if(json["data"] == "black") {
                 bgColor = ofColor::black;
-            }
-            else
-            {
+            } else {
                 cout << "Unknown color: " << json["data"].toStyledString() << endl;
             }
         }
-    }
-    else
-    {
-        ofLogError("ofApp::onWebSocketFrameReceivedEvent") << "Unable to parse JSON: "  << evt.getFrameRef().getText();
+    } else {
+        ofLogError("ofApp::onWebSocketFrameReceivedEvent") << "Unable to parse JSON: "  << evt.frame().getText();
     }
 }
 
 
-void ofApp::onWebSocketFrameSentEvent(HTTP::WebSocketFrameEventArgs& evt)
-{
+void ofApp::onWebSocketFrameSentEvent(ofxHTTP::WebSocketFrameEventArgs& evt) {
     // frame was sent to clients
 }
 
 
-void ofApp::onWebSocketErrorEvent(HTTP::WebSocketEventArgs& evt)
-{
-    cout << "Error from: " << evt.getConnectionRef().getClientAddress().toString() << endl;
+void ofApp::onWebSocketErrorEvent(ofxHTTP::WebSocketErrorEventArgs& evt) {
+    cout << "Error from: " << evt.connection().clientAddress().toString() << endl;
 }
 
