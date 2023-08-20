@@ -1,10 +1,8 @@
 #include "ofApp.h"
 
-//--------------------------------------------------------------
-void ofApp::setup(){
-    
-    
-    //https://gist.github.com/tuxmartin/1218851b7e025f68ecc50f949c9dd332
+// https://gist.github.com/tuxmartin/1218851b7e025f68ecc50f949c9dd332
+
+void ofApp::setup() {  
     Poco::Net::HTTPClientSession websocket("127.0.0.1", 7112);    
     Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_GET, "/?encoding=text",Poco::Net::HTTPMessage::HTTP_1_1);
     request.set("origin", "http://www.websocket.org");
@@ -12,35 +10,22 @@ void ofApp::setup(){
     
     try {
         m_psock = new Poco::Net::WebSocket(websocket, request, response);
-        
     } catch (std::exception &e) {
         std::cout << "Exception " << e.what();
     }
-    
-    
-    
 }
 
-void ofApp::exit(){
+void ofApp::exit() {
     m_psock->close();
 }
 
-
-//--------------------------------------------------------------
-void ofApp::update(){
-    
-    
-}
-
-
-
-//--------------------------------------------------------------
-void ofApp::draw(){
+void ofApp::draw() {
     ofDrawBitmapString("key 1 and 2 to switch between scenes", 10, 10);
 }
 
-void ofApp::switchToScene(string _scene){
-    
+//--------------------------------------------------------------
+
+void ofApp::switchToScene(string _scene) {   
     try {
         ofJson myJson;
         myJson["request-type"] = "SetCurrentScene";
@@ -66,69 +51,14 @@ void ofApp::switchToScene(string _scene){
         std::cout << "Exception " << e.what();
     }
 }
-//--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-    
-    
-    
-}
 
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-    
-    
-    if(key == '1'){
-        
-        switchToScene("cam_scene");
-        
+void ofApp::keyReleased(int key) { 
+    if (key == '1') {        
+        switchToScene("cam_scene");        
     }
-    if(key == '2'){
+
+    if (key == '2') {
         switchToScene("file_scene");
-    }
-    
+    }   
 }
 
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-    
-}
-
-void ofApp::gotMessage(ofMessage msg)
-{
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){
-    
-}
