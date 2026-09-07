@@ -12,6 +12,8 @@
 #define INIT_SET_WITH_ARRAY(x) x, x + sizeof(x) / sizeof(x[0])
 
 
+#include <mutex>
+#include <queue>
 #include <set>
 #include <string>
 
